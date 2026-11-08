@@ -29,9 +29,22 @@ export function authSchemas(lang: Lang) {
           .optional(),
         password,
         confirmPassword: z.string(),
-        role: z.enum(["PATIENT", "CAREGIVER"]),
+        role: z.enum(["PATIENT", "CAREGIVER", "DOCTOR", "PHARMACY"]),
+        organization: z.string().trim().optional(),
+        licenseNumber: z.string().trim().optional(),
+        specialty: z.string().trim().optional(),
       })
-      .refine((v) => v.password === v.confirmPassword, mismatch),
+      .refine((v) => v.password === v.confirmPassword, mismatch)
+      .superRefine((v, ctx) => {
+        if (v.role !== "DOCTOR" && v.role !== "PHARMACY") return;
+        const doctor = v.role === "DOCTOR";
+        if (!v.organization || v.organization.length < 2) {
+          ctx.addIssue({ code: "custom", path: ["organization"], message: doctor ? t("Enter your hospital or chamber", "হাসপাতাল বা চেম্বারের নাম দিন") : t("Enter the pharmacy name", "ফার্মেসির নাম দিন") });
+        }
+        if (!v.licenseNumber || v.licenseNumber.length < 3) {
+          ctx.addIssue({ code: "custom", path: ["licenseNumber"], message: doctor ? t("Enter your BMDC registration number", "BMDC রেজিস্ট্রেশন নম্বর দিন") : t("Enter the drug licence number", "ড্রাগ লাইসেন্স নম্বর দিন") });
+        }
+      }),
     otp: z.object({ code }),
     reset: z
       .object({ email, code, password, confirmPassword: z.string() })

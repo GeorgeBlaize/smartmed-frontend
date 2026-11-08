@@ -32,7 +32,7 @@ export function LoginForm() {
         const user = res.data.user;
         toast.success(t(`Welcome back, ${user.name.split(" ")[0]}!`, `আবার স্বাগতম, ${user.name.split(" ")[0]}!`));
         const next = params.get("next");
-        if (!user.isEmailVerified) router.push(`/verify-email?email=${encodeURIComponent(user.email)}`);
+        if (!user.isEmailVerified) router.push(`/verify-email?email=${encodeURIComponent(user.email)}${next?.startsWith("/") ? `&next=${encodeURIComponent(next)}` : ""}`);
         else router.push(next?.startsWith("/") ? next : user.role === "ADMIN" ? "/admin" : "/dashboard");
       },
     }),

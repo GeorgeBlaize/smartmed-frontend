@@ -30,7 +30,10 @@ export interface RegisterInput {
   email: string;
   phone?: string;
   password: string;
-  role: "PATIENT" | "CAREGIVER";
+  role: "PATIENT" | "CAREGIVER" | "DOCTOR" | "PHARMACY";
+  organization?: string;
+  licenseNumber?: string;
+  specialty?: string;
 }
 
 export function useRegister() {

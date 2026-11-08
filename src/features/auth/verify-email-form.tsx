@@ -32,7 +32,9 @@ export function VerifyEmailForm() {
       {
         onSuccess: () => {
           toast.success(t("Email verified!", "ইমেইল যাচাই সম্পন্ন!"));
-          router.push(me ? (me.role === "ADMIN" ? "/admin" : "/dashboard") : "/login");
+          const next = params.get("next");
+          if (!me) router.push(next?.startsWith("/") ? `/login?next=${encodeURIComponent(next)}` : "/login");
+          else router.push(next?.startsWith("/") ? next : me.role === "ADMIN" ? "/admin" : "/dashboard");
         },
       },
     ),
