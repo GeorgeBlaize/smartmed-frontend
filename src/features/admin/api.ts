@@ -81,7 +81,7 @@ function useAdminMutation<T>(fn: (input: T) => Promise<unknown>) {
 }
 
 export const useUpdateUser = () =>
-  useAdminMutation(({ id, ...data }: { id: string; role?: Role; status?: "ACTIVE" | "SUSPENDED"; plan?: "FREE" | "PREMIUM" }) =>
+  useAdminMutation(({ id, ...data }: { id: string; role?: Role; status?: "ACTIVE" | "SUSPENDED"; plan?: "FREE" | "PREMIUM"; isProVerified?: boolean }) =>
     api.patch(`/admin/users/${id}`, data),
   );
 export const useDeleteUser = () => useAdminMutation((id: string) => api.delete(`/admin/users/${id}`));

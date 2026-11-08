@@ -1,6 +1,6 @@
 "use client";
 
-import { Ban, CheckCircle2, Crown, LogOut, MoreHorizontal, ShieldCheck, Trash2, UserCog } from "lucide-react";
+import { BadgeCheck, Ban, CheckCircle2, Crown, LogOut, MoreHorizontal, ShieldCheck, Trash2, UserCog } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 import { ConfirmDialog } from "@/components/shared/confirm-dialog";
@@ -30,8 +30,8 @@ import { errorMessage } from "@/lib/api";
 import { fmtDate, fmtRelative, initials } from "@/lib/format";
 import type { Role } from "@/types";
 import { useT } from "@/hooks/use-t";
+import { isProfessional, ROLE_LABELS } from "@/lib/roles";
 
-const ROLE_BN: Record<Role, string> = { PATIENT: "রোগী", CAREGIVER: "কেয়ারগিভার", ADMIN: "অ্যাডমিন" };
 
 function UserActions({ user, isSelf }: { user: AdminUser; isSelf: boolean }) {
   const update = useUpdateUser();
@@ -56,9 +56,9 @@ function UserActions({ user, isSelf }: { user: AdminUser; isSelf: boolean }) {
               <UserCog /> {t("Change role", "ভূমিকা পরিবর্তন")}
             </DropdownMenuSubTrigger>
             <DropdownMenuSubContent>
-              {(["PATIENT", "CAREGIVER", "ADMIN"] as Role[]).map((r) => (
+              {(["PATIENT", "CAREGIVER", "DOCTOR", "PHARMACY", "ADMIN"] as Role[]).map((r) => (
                 <DropdownMenuItem key={r} disabled={user.role === r} onClick={() => update.mutate({ id: user.id, role: r }, done(t(`Role changed to ${r.toLowerCase()}`, "ভূমিকা পরিবর্তন হয়েছে")))}>
-                  {t(r.toLowerCase(), ROLE_BN[r])}
+                  {t(ROLE_LABELS[r].en, ROLE_LABELS[r].bn)}
                 </DropdownMenuItem>
               ))}
             </DropdownMenuSubContent>
@@ -74,6 +74,18 @@ function UserActions({ user, isSelf }: { user: AdminUser; isSelf: boolean }) {
               <CheckCircle2 /> {t("Re-activate", "আবার সক্রিয় করুন")}
             </DropdownMenuItem>
           ))}
+        {isProfessional(user.role) && (
+          <DropdownMenuItem
+            onClick={() =>
+              update.mutate(
+                { id: user.id, isProVerified: !user.isProVerified },
+                done(user.isProVerified ? t("Verification removed", "যাচাই বাতিল করা হয়েছে") : t("Professional verified", "পেশাদার যাচাই সম্পন্ন")),
+              )
+            }
+          >
+            <BadgeCheck /> {user.isProVerified ? t("Remove verification", "যাচাই বাতিল করুন") : t("Mark licence verified", "লাইসেন্স যাচাইকৃত করুন")}
+          </DropdownMenuItem>
+        )}
         <DropdownMenuItem
           onClick={() => update.mutate({ id: user.id, plan: user.plan === "PREMIUM" ? "FREE" : "PREMIUM" }, done(user.plan === "PREMIUM" ? t("Moved to Free", "ফ্রি প্ল্যানে নেওয়া হয়েছে") : t("Granted Premium", "প্রিমিয়াম দেওয়া হয়েছে")))}
         >
@@ -192,14 +204,24 @@ export default function AdminUsersPage() {
                       </div>
                     </TableCell>
                     <TableCell>
-                      <Badge variant={u.role === "ADMIN" ? "default" : "secondary"}>{t(u.role.toLowerCase(), ROLE_BN[u.role])}</Badge>
+                      <Badge variant={u.role === "ADMIN" ? "default" : "secondary"}>{t(ROLE_LABELS[u.role].en, ROLE_LABELS[u.role].bn)}</Badge>
+                      {isProfessional(u.role) &&
+                        (u.isProVerified ? (
+                          <Badge variant="outline" className="mt-1 flex w-fit gap-1 border-primary/40 text-primary">
+                            <BadgeCheck className="size-3" /> {t("Verified", "যাচাইকৃত")}
+                          </Badge>
+                        ) : (
+                          <Badge variant="outline" className="mt-1 flex w-fit">{t("Pending check", "যাচাই বাকি")}</Badge>
+                        ))}
                     </TableCell>
                     <TableCell className="hidden text-xs text-muted-foreground md:table-cell">
                       {u.role === "PATIENT"
                         ? t(`${u._count.prescriptions} Rx · ${u._count.medicines} meds · ${u._count.patientLinks} caregivers`, `${n(u._count.prescriptions)} প্রেসক্রিপশন · ${n(u._count.medicines)} ওষুধ · ${n(u._count.patientLinks)} কেয়ারগিভার`)
                         : u.role === "CAREGIVER"
                           ? t(`${u._count.caregiverLinks} patients`, `${n(u._count.caregiverLinks)} জন রোগী`)
-                          : "—"}
+                          : isProfessional(u.role)
+                            ? [u.organization, u.licenseNumber && `${u.role === "DOCTOR" ? "BMDC" : t("Licence", "লাইসেন্স")}: ${u.licenseNumber}`].filter(Boolean).join(" · ") || "—"
+                            : "—"}
                       <br />
                       {t("Last login", "শেষ লগইন")} {fmtRelative(u.lastLoginAt)}
                     </TableCell>
