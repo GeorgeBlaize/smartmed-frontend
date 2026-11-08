@@ -46,7 +46,7 @@ export function DashboardShell({ children, allow }: { children: ReactNode; allow
       <a href="#content" className="sr-only focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:z-50 focus:rounded-lg focus:bg-primary focus:px-4 focus:py-2 focus:text-primary-foreground">
         {t("Skip to content", "মূল অংশে যান")}
       </a>
-      <aside className="sticky top-0 hidden h-screen w-64 shrink-0 flex-col border-r bg-sidebar lg:flex">
+      <aside className="sticky top-0 hidden h-screen print:!hidden w-64 shrink-0 flex-col border-r bg-sidebar lg:flex">
         <div className="flex h-16 items-center px-5">
           <Logo href={user.role === "ADMIN" ? "/admin" : "/dashboard"} />
         </div>
@@ -56,7 +56,7 @@ export function DashboardShell({ children, allow }: { children: ReactNode; allow
       </aside>
 
       <div className="flex min-w-0 flex-1 flex-col">
-        <header className="sticky top-0 z-30 flex h-16 items-center gap-2 border-b bg-background/85 px-4 backdrop-blur">
+        <header className="sticky top-0 z-30 flex h-16 print:hidden items-center gap-2 border-b bg-background/85 px-4 backdrop-blur">
           <Sheet open={open} onOpenChange={setOpen}>
             <SheetTrigger asChild>
               <Button variant="ghost" size="icon" className="lg:hidden" aria-label={t("Open navigation", "মেনু খুলুন")}>
@@ -84,7 +84,7 @@ export function DashboardShell({ children, allow }: { children: ReactNode; allow
         </header>
 
         {!user.isEmailVerified && (
-          <div className="flex flex-wrap items-center gap-3 border-b bg-secondary px-4 py-2.5 text-sm text-secondary-foreground">
+          <div className="flex flex-wrap items-center gap-3 border-b bg-secondary px-4 py-2.5 print:hidden text-sm text-secondary-foreground">
             <MailWarning className="size-5 shrink-0" />
             <span>{t("Verify your email to unlock AI scans, caregivers and payments.", "এআই স্ক্যান, কেয়ারগিভার ও পেমেন্ট চালু করতে আপনার ইমেইল যাচাই করুন।")}</span>
             <Button size="sm" variant="outline" asChild className="ml-auto">
@@ -93,7 +93,7 @@ export function DashboardShell({ children, allow }: { children: ReactNode; allow
           </div>
         )}
 
-        <main id="content" className="mx-auto w-full max-w-6xl flex-1 px-4 py-6 sm:px-6 lg:py-8">
+        <main id="content" className="mx-auto w-full max-w-6xl flex-1 px-4 py-6 sm:px-6 lg:py-8 print:p-0">
           {children}
         </main>
       </div>

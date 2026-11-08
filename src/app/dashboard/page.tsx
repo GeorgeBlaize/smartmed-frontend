@@ -6,6 +6,8 @@ import { PageLoader } from "@/components/shared/states";
 import { useMe } from "@/features/auth/api";
 import { CaregiverHome } from "@/features/care/caregiver-home";
 import { PatientHome } from "@/features/dashboard/patient-home";
+import { ProHome } from "@/features/issued/pro-home";
+import { isProfessional } from "@/lib/roles";
 
 export default function DashboardPage() {
   const { data: user } = useMe();
@@ -16,5 +18,6 @@ export default function DashboardPage() {
   }, [user, router]);
 
   if (!user || user.role === "ADMIN") return <PageLoader />;
+  if (isProfessional(user.role)) return <ProHome user={user} />;
   return user.role === "CAREGIVER" ? <CaregiverHome user={user} /> : <PatientHome user={user} />;
 }
