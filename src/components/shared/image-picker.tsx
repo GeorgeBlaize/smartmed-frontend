@@ -27,10 +27,12 @@ export function ImagePicker({
   const { t } = useT();
   const preview = useMemo(() => (file ? URL.createObjectURL(file) : null), [file]);
 
+  // Revoke only the URL a new photo replaced. Revoking in an effect cleanup breaks the preview under
+  // React Strict Mode, which unmounts and remounts once while the memoised URL stays the same.
+  const shownUrl = useRef<string | null>(null);
   useEffect(() => {
-    return () => {
-      if (preview) URL.revokeObjectURL(preview);
-    };
+    if (shownUrl.current && shownUrl.current !== preview) URL.revokeObjectURL(shownUrl.current);
+    shownUrl.current = preview;
   }, [preview]);
 
   const handle = async (list: FileList | null) => {
