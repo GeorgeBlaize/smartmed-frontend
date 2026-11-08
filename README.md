@@ -7,7 +7,7 @@ The project overview, features, ERD, architecture, API reference, testing plan a
 
 | | |
 | --- | --- |
-| Live app | _add the Vercel URL here_ |
+| Live app | https://smartmed-frontend-nine.vercel.app |
 | API repo + docs | https://github.com/GeorgeBlaize/backend |
 | Architecture | [docs/ARCHITECTURE.md](https://github.com/GeorgeBlaize/backend/blob/main/docs/ARCHITECTURE.md) |
 | Contributing | [CONTRIBUTING.md](CONTRIBUTING.md) |
