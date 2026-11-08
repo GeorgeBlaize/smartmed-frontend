@@ -1,6 +1,16 @@
 # SmartMed — Frontend
 
-Next.js 16 + TypeScript + Tailwind CSS + shadcn/ui. See the [root README](../README.md) for the full project.
+Next.js 16 + TypeScript + Tailwind CSS + shadcn/ui.
+
+The project overview, features, ERD, architecture, API reference, testing plan and team workflow live in the
+**[backend repo](https://github.com/GeorgeBlaize/backend#readme)** (`docs/` folder) so there is one source of truth.
+
+| | |
+| --- | --- |
+| Live app | _add the Vercel URL here_ |
+| API repo + docs | https://github.com/GeorgeBlaize/backend |
+| Architecture | [docs/ARCHITECTURE.md](https://github.com/GeorgeBlaize/backend/blob/main/docs/ARCHITECTURE.md) |
+| Contributing | [CONTRIBUTING.md](CONTRIBUTING.md) |
 
 ```bash
 cp .env.example .env.local   # BACKEND_URL=http://localhost:5000
