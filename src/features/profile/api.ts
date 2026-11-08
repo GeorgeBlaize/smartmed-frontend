@@ -14,9 +14,11 @@ function useUserMutation<TInput>(fn: (input: TInput) => Promise<{ data: User }>)
 }
 
 export type ProfileInput = Partial<
-  Pick<User, "name" | "phone" | "dateOfBirth" | "gender" | "bloodGroup" | "allergies" | "chronicConditions" | "emergencyContact">
+  Pick<User, "name" | "phone" | "dateOfBirth" | "gender" | "bloodGroup" | "allergies" | "chronicConditions" | "emergencyContact" | "organization" | "licenseNumber" | "specialty" | "address">
 >;
-export type PreferencesInput = Partial<Pick<User, "language" | "largeFont" | "voiceEnabled" | "timezone" | "honorific">>;
+export type PreferencesInput = Partial<
+  Pick<User, "language" | "largeFont" | "voiceEnabled" | "timezone" | "honorific" | "smsEnabled" | "callEnabled">
+>;
 
 export const useUpdateProfile = () => useUserMutation((input: ProfileInput) => api.patch<User>("/users/me", input));
 
@@ -28,6 +30,12 @@ export const useUploadAvatar = () =>
     const form = new FormData();
     form.append("image", file);
     return api.post<User>("/users/me/avatar", form);
+  });
+
+export const useTestAlert = () =>
+  useMutation({
+    mutationFn: () =>
+      api.post<{ sms: boolean; call: boolean; smsConfigured: boolean; voiceConfigured: boolean }>("/users/me/test-alert"),
   });
 
 export function useShareLink() {

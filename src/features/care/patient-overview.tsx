@@ -19,6 +19,7 @@ import { MedicineList } from "@/features/medicines/medicine-list";
 import { PrescriptionList } from "@/features/prescriptions/prescription-list";
 import { ageFromDob, fmtDate, initials } from "@/lib/format";
 import { usePatientOverview } from "./api";
+import { PatientAlertsCard } from "./patient-alerts-card";
 import { useT } from "@/hooks/use-t";
 
 /** Caregiver's complete view of one patient – every tab reuses the patient's own feature components. */
@@ -106,6 +107,7 @@ export function PatientOverviewView({ patientId }: { patientId: string }) {
           <TabsTrigger value="history">{t("History", "ইতিহাস")}</TabsTrigger>
           <TabsTrigger value="cabinet">{t("Cabinet", "ওষুধের বাক্স")}</TabsTrigger>
           <TabsTrigger value="insights">{t("AI insights", "এআই রিপোর্ট")}</TabsTrigger>
+          <TabsTrigger value="alerts">{t("Phone alerts", "ফোন অ্যালার্ট")}</TabsTrigger>
         </TabsList>
         <TabsContent value="today">
           <TodaySchedule data={today} isLoading={false} error={null} onRetry={refetch} patientId={patientId} emptyAction={false} />
@@ -127,6 +129,9 @@ export function PatientOverviewView({ patientId }: { patientId: string }) {
             <AdherenceInsightPanel patientId={patientId} />
             <InteractionChecker patientId={patientId} />
           </div>
+        </TabsContent>
+        <TabsContent value="alerts">
+          <PatientAlertsCard key={`${patient.phone}-${patient.smsEnabled}-${patient.callEnabled}`} patientId={patientId} patient={patient} />
         </TabsContent>
       </Tabs>
     </>

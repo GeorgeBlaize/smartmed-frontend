@@ -16,6 +16,7 @@ import { compressImage } from "@/lib/image";
 import type { User } from "@/types";
 import { useUpdateProfile, useUploadAvatar } from "./api";
 import { useT } from "@/hooks/use-t";
+import { isProfessional } from "@/lib/roles";
 
 const BLOOD = ["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"];
 
@@ -33,9 +34,15 @@ export function ProfileForm({ user }: { user: User }) {
     allergies: user.allergies,
     chronicConditions: user.chronicConditions,
     emergencyContact: user.emergencyContact ?? "",
+    organization: user.organization ?? "",
+    licenseNumber: user.licenseNumber ?? "",
+    specialty: user.specialty ?? "",
+    address: user.address ?? "",
   });
   const set = <K extends keyof typeof form>(k: K, v: (typeof form)[K]) => setForm((f) => ({ ...f, [k]: v }));
   const isPatient = user.role === "PATIENT";
+  const isPro = isProfessional(user.role);
+  const isDoctor = user.role === "DOCTOR";
 
   const save = () =>
     update.mutate(
@@ -48,6 +55,14 @@ export function ProfileForm({ user }: { user: User }) {
         allergies: form.allergies,
         chronicConditions: form.chronicConditions,
         emergencyContact: form.emergencyContact || null,
+        ...(isPro
+          ? {
+              organization: form.organization || null,
+              licenseNumber: form.licenseNumber || null,
+              specialty: form.specialty || null,
+              address: form.address || null,
+            }
+          : {}),
       },
       { onSuccess: () => toast.success(t("Profile saved", "প্রোফাইল সংরক্ষণ হয়েছে")), onError: (e) => toast.error(errorMessage(e)) },
     );
@@ -56,7 +71,7 @@ export function ProfileForm({ user }: { user: User }) {
     <Card>
       <CardHeader>
         <CardTitle>{t("Profile", "প্রোফাইল")}</CardTitle>
-        <CardDescription>{isPatient ? t("Your medical profile is shown to doctors through your share link and used by the AI for safety checks.", "আপনার মেডিকেল প্রোফাইল শেয়ার লিংকের মাধ্যমে ডাক্তার দেখতে পান এবং এআই নিরাপত্তা যাচাইয়ে ব্যবহার করে।") : t("Your account details.", "আপনার অ্যাকাউন্টের তথ্য।")}</CardDescription>
+        <CardDescription>{isPatient ? t("Your medical profile is shown to doctors through your share link and used by the AI for safety checks.", "আপনার মেডিকেল প্রোফাইল শেয়ার লিংকের মাধ্যমে ডাক্তার দেখতে পান এবং এআই নিরাপত্তা যাচাইয়ে ব্যবহার করে।") : isPro ? t("These details are printed on every prescription you issue.", "এই তথ্যগুলো আপনার প্রতিটি প্রেসক্রিপশনে ছাপা হবে।") : t("Your account details.", "আপনার অ্যাকাউন্টের তথ্য।")}</CardDescription>
       </CardHeader>
       <CardContent className="space-y-6">
         <div className="flex items-center gap-4">
@@ -92,6 +107,31 @@ export function ProfileForm({ user }: { user: User }) {
             <Label htmlFor="p-phone">{t("Phone", "ফোন")}</Label>
             <Input id="p-phone" type="tel" value={form.phone} onChange={(e) => set("phone", e.target.value)} />
           </div>
+          {isPro && (
+            <>
+              <div className="space-y-1.5 sm:col-span-2">
+                <Label htmlFor="p-org">{isDoctor ? t("Hospital / chamber", "হাসপাতাল / চেম্বার") : t("Pharmacy name", "ফার্মেসির নাম")}</Label>
+                <Input id="p-org" value={form.organization} onChange={(e) => set("organization", e.target.value)} />
+              </div>
+              <div className="space-y-1.5">
+                <Label htmlFor="p-license">{isDoctor ? t("BMDC registration no.", "BMDC রেজিস্ট্রেশন নং") : t("Drug licence no.", "ড্রাগ লাইসেন্স নং")}</Label>
+                <Input id="p-license" value={form.licenseNumber} onChange={(e) => set("licenseNumber", e.target.value)} />
+                {user.isProVerified && (
+                  <p className="text-xs text-muted-foreground">{t("Changing this removes your verified badge until SmartMed checks it again.", "এটি বদলালে স্মার্টমেড আবার যাচাই না করা পর্যন্ত যাচাইকৃত ব্যাজ থাকবে না।")}</p>
+                )}
+              </div>
+              {isDoctor && (
+                <div className="space-y-1.5">
+                  <Label htmlFor="p-specialty">{t("Specialty", "বিশেষজ্ঞতা")}</Label>
+                  <Input id="p-specialty" value={form.specialty} onChange={(e) => set("specialty", e.target.value)} />
+                </div>
+              )}
+              <div className="space-y-1.5 sm:col-span-2">
+                <Label htmlFor="p-address">{t("Address (printed on prescriptions)", "ঠিকানা (প্রেসক্রিপশনে ছাপা হবে)")}</Label>
+                <Input id="p-address" value={form.address} onChange={(e) => set("address", e.target.value)} />
+              </div>
+            </>
+          )}
           {isPatient && (
             <>
               <div className="space-y-1.5">

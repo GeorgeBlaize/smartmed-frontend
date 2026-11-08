@@ -40,6 +40,15 @@ export const usePatientOverview = (patientId: string) =>
     refetchInterval: 60_000,
   });
 
+export function useUpdatePatientAlerts(patientId: string) {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (input: { phone?: string | null; smsEnabled?: boolean; callEnabled?: boolean }) =>
+      api.patch(`/care/patients/${patientId}/alerts`, input),
+    onSuccess: () => qc.invalidateQueries({ queryKey: careKeys.overview(patientId) }),
+  });
+}
+
 export function useInviteCaregiver() {
   const qc = useQueryClient();
   return useMutation({
