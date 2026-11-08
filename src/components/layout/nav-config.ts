@@ -15,6 +15,9 @@ import {
   Users,
   ScrollText,
   Receipt,
+  FilePlus2,
+  ScanLine,
+  ClipboardList,
   type LucideIcon,
 } from "lucide-react";
 import type { Role } from "@/types";
@@ -76,6 +79,37 @@ export const NAV_BY_ROLE: Record<Role, NavGroup[]> = {
         { href: "/dashboard/assistant", label: "Health assistant", labelBn: "স্বাস্থ্য সহকারী", icon: Bot },
         { href: "/dashboard/ai-tools", label: "Medicine check", labelBn: "ওষুধ যাচাই", icon: FlaskConical },
       ],
+    },
+    ACCOUNT,
+  ],
+  DOCTOR: [
+    {
+      items: [
+        { href: "/dashboard", label: "Overview", labelBn: "সারসংক্ষেপ", icon: LayoutDashboard },
+        { href: "/dashboard/issue/new", label: "Write prescription", labelBn: "প্রেসক্রিপশন লিখুন", icon: FilePlus2 },
+        { href: "/dashboard/issue", label: "My prescriptions", labelBn: "আমার প্রেসক্রিপশন", icon: ClipboardList },
+      ],
+    },
+    {
+      title: "AI tools", titleBn: "এআই টুলস",
+      items: [
+        { href: "/dashboard/ai-tools", label: "Medicine check", labelBn: "ওষুধ যাচাই", icon: FlaskConical },
+        { href: "/dashboard/assistant", label: "Health assistant", labelBn: "স্বাস্থ্য সহকারী", icon: Bot },
+      ],
+    },
+    ACCOUNT,
+  ],
+  PHARMACY: [
+    {
+      items: [
+        { href: "/dashboard", label: "Overview", labelBn: "সারসংক্ষেপ", icon: LayoutDashboard },
+        { href: "/dashboard/issue/new", label: "Scan prescription", labelBn: "প্রেসক্রিপশন স্ক্যান", icon: ScanLine },
+        { href: "/dashboard/issue", label: "Handed to customers", labelBn: "গ্রাহকদের দেওয়া", icon: ClipboardList },
+      ],
+    },
+    {
+      title: "AI tools", titleBn: "এআই টুলস",
+      items: [{ href: "/dashboard/ai-tools", label: "Medicine check", labelBn: "ওষুধ যাচাই", icon: FlaskConical }],
     },
     ACCOUNT,
   ],

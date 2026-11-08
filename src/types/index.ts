@@ -1,6 +1,7 @@
 /** Shapes returned by the SmartMed API (mirrors the Prisma models on the backend). */
 
-export type Role = "PATIENT" | "CAREGIVER" | "ADMIN";
+export type Role = "PATIENT" | "CAREGIVER" | "ADMIN" | "DOCTOR" | "PHARMACY";
+export type PrescriptionSource = "UPLOAD" | "DOCTOR" | "PHARMACY";
 export type Plan = "FREE" | "PREMIUM";
 export type Language = "bn" | "en";
 export type MealTiming = "BEFORE_MEAL" | "AFTER_MEAL" | "WITH_MEAL" | "ANY";
@@ -27,6 +28,13 @@ export interface User {
   allergies: string[];
   chronicConditions: string[];
   emergencyContact: string | null;
+  smsEnabled: boolean;
+  callEnabled: boolean;
+  organization: string | null;
+  licenseNumber: string | null;
+  specialty: string | null;
+  address: string | null;
+  isProVerified: boolean;
   plan: Plan;
   planExpiresAt: string | null;
   shareToken: string | null;
@@ -68,7 +76,8 @@ export interface Medicine {
 export interface Prescription {
   id: string;
   patientId: string;
-  imageUrl: string;
+  imageUrl: string | null;
+  source: PrescriptionSource;
   title: string | null;
   doctorName: string | null;
   hospital: string | null;
@@ -180,7 +189,7 @@ export interface CaredPatient {
 }
 
 export interface PatientOverview {
-  patient: Pick<User, "id" | "name" | "email" | "phone" | "avatarUrl" | "dateOfBirth" | "bloodGroup" | "allergies" | "chronicConditions" | "emergencyContact">;
+  patient: Pick<User, "id" | "name" | "email" | "phone" | "avatarUrl" | "dateOfBirth" | "bloodGroup" | "allergies" | "chronicConditions" | "emergencyContact" | "smsEnabled" | "callEnabled">;
   today: TodaySchedule;
   weekly: AdherenceStats;
   medicines: Medicine[];
@@ -284,4 +293,57 @@ export interface SessionInfo {
 export interface Paginated<T> {
   items: T[];
   meta?: { page: number; limit: number; total: number; totalPages: number };
+}
+
+/** A prescription written by a doctor or scanned by a pharmacy, handed to a patient via QR code. */
+export interface IssuedItem {
+  name: string;
+  genericName?: string | null;
+  strength?: string | null;
+  form?: string | null;
+  dosagePattern?: string | null;
+  instructions?: string | null;
+  instructionsBn?: string | null;
+  mealTiming: MealTiming;
+  durationDays?: number | null;
+  reminders: { time: string; quantity: string; daysOfWeek: number[]; isActive?: boolean }[];
+}
+
+export interface IssuedPrescription {
+  id: string;
+  code: string;
+  claimUrl: string;
+  source: "DOCTOR" | "PHARMACY";
+  patientName: string;
+  patientAge: number | null;
+  patientGender: "male" | "female" | "other" | null;
+  patientPhone: string | null;
+  diagnosis: string | null;
+  advice: string | null;
+  followUpDate: string | null;
+  imageUrl: string | null;
+  items: IssuedItem[];
+  claimedAt: string | null;
+  claimedBy?: { id: string; name: string } | null;
+  expiresAt: string;
+  createdAt: string;
+  issuer?: { id: string; name: string; organization: string | null; specialty: string | null; licenseNumber: string | null; isProVerified: boolean };
+}
+
+export interface ClaimPreview {
+  code: string;
+  source: "DOCTOR" | "PHARMACY";
+  issuer: { name: string; organization: string | null; specialty: string | null; licenseNumber: string | null; isProVerified: boolean };
+  patientName: string;
+  patientAge: number | null;
+  patientGender: string | null;
+  diagnosis: string | null;
+  advice: string | null;
+  followUpDate: string | null;
+  imageUrl: string | null;
+  items: IssuedItem[];
+  createdAt: string;
+  expiresAt: string;
+  claimed: boolean;
+  expired: boolean;
 }

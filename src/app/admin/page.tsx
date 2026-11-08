@@ -11,9 +11,10 @@ import { BroadcastCard } from "@/features/admin/broadcast-card";
 import { useAdminStats } from "@/features/admin/api";
 import { dateLocale, fmtRelative, formatTaka } from "@/lib/format";
 import { useT } from "@/hooks/use-t";
+import { ROLE_LABELS } from "@/lib/roles";
 
 const tooltipStyle = { background: "var(--popover)", border: "1px solid var(--border)", borderRadius: 12, color: "var(--popover-foreground)" };
-const PIE_COLORS = ["var(--chart-1)", "var(--chart-4)", "var(--chart-3)"];
+const PIE_COLORS = ["var(--chart-1)", "var(--chart-4)", "var(--chart-3)", "var(--chart-5)", "var(--chart-2)"];
 const FEATURE_LABEL: Record<string, [string, string]> = {
   PRESCRIPTION_OCR: ["Prescription OCR", "প্রেসক্রিপশন পড়া"],
   EXPIRY_SCAN: ["Expiry scan", "মেয়াদ স্ক্যান"],
@@ -22,7 +23,6 @@ const FEATURE_LABEL: Record<string, [string, string]> = {
   HEALTH_CHAT: ["Chat", "চ্যাট"],
   ADHERENCE_INSIGHT: ["Insights", "রিপোর্ট"],
 };
-const ROLE_BN: Record<string, string> = { patient: "রোগী", caregiver: "কেয়ারগিভার", admin: "অ্যাডমিন" };
 
 export default function AdminOverviewPage() {
   const { data, isLoading, error, refetch } = useAdminStats();
@@ -35,7 +35,7 @@ export default function AdminOverviewPage() {
     signups: d.count,
     uploads: data.prescriptions.uploadsDaily[i]?.count ?? 0,
   }));
-  const roles = (["PATIENT", "CAREGIVER", "ADMIN"] as const).map((r) => ({ name: t(r.toLowerCase(), ROLE_BN[r.toLowerCase()]!), value: data.users.byRole[r] ?? 0 }));
+  const roles = (["PATIENT", "CAREGIVER", "DOCTOR", "PHARMACY", "ADMIN"] as const).map((r) => ({ name: t(ROLE_LABELS[r].en, ROLE_LABELS[r].bn), value: data.users.byRole[r] ?? 0 }));
   const ai = data.ai.byFeature.map((f) => ({ name: FEATURE_LABEL[f.feature] ? tp(FEATURE_LABEL[f.feature]) : f.feature, count: f.count, latency: f.avgLatencyMs }));
 
   return (

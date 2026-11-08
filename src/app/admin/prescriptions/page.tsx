@@ -17,6 +17,7 @@ import { errorMessage } from "@/lib/api";
 import { fmtDate } from "@/lib/format";
 import type { Prescription } from "@/types";
 import { useT } from "@/hooks/use-t";
+import { RxThumb } from "@/components/shared/rx-thumb";
 
 function RemoveDialog({ rx }: { rx: Prescription }) {
   const [reason, setReason] = useState("");
@@ -105,11 +106,16 @@ export default function AdminPrescriptionsPage() {
         <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
           {data.items.map((rx) => (
             <Card key={rx.id} className="overflow-hidden py-0">
-              <a href={rx.imageUrl} target="_blank" rel="noreferrer" className="relative block h-40 bg-muted">
-                {/* eslint-disable-next-line @next/next/no-img-element -- Cloudinary thumbnail */}
-                <img src={rx.imageUrl.replace("/upload/", "/upload/c_fill,w_600,h_320,q_auto,f_auto/")} alt="" className="size-full object-cover" loading="lazy" />
-                <ExternalLink className="absolute top-2 right-2 size-5 rounded bg-background/80 p-0.5" />
-              </a>
+              {rx.imageUrl ? (
+                <a href={rx.imageUrl} target="_blank" rel="noreferrer" className="relative block h-40 bg-muted">
+                  <RxThumb url={rx.imageUrl} source={rx.source} height={320} />
+                  <ExternalLink className="absolute top-2 right-2 size-5 rounded bg-background/80 p-0.5" />
+                </a>
+              ) : (
+                <div className="h-40">
+                  <RxThumb url={null} source={rx.source} />
+                </div>
+              )}
               <CardContent className="space-y-2 pb-5">
                 <div className="flex items-center justify-between gap-2">
                   <p className="truncate font-semibold">{rx.patient?.name}</p>

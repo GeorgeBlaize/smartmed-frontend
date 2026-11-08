@@ -18,6 +18,7 @@ import { useLogout } from "@/features/auth/api";
 import { initials } from "@/lib/format";
 import type { User } from "@/types";
 import { useT } from "@/hooks/use-t";
+import { ROLE_LABELS } from "@/lib/roles";
 
 export function UserMenu({ user }: { user: User }) {
   const router = useRouter();
@@ -40,7 +41,7 @@ export function UserMenu({ user }: { user: User }) {
           <p className="truncate font-semibold">{user.name}</p>
           <p className="truncate text-xs font-normal text-muted-foreground">{user.email}</p>
           <div className="flex gap-1.5 pt-1">
-            <Badge variant="secondary">{t(user.role.toLowerCase(), { PATIENT: "রোগী", CAREGIVER: "কেয়ারগিভার", ADMIN: "অ্যাডমিন" }[user.role])}</Badge>
+            <Badge variant="secondary">{t(ROLE_LABELS[user.role].en, ROLE_LABELS[user.role].bn)}</Badge>
             {user.plan === "PREMIUM" && <Badge>{t("Premium", "প্রিমিয়াম")}</Badge>}
           </div>
         </DropdownMenuLabel>

@@ -18,6 +18,7 @@ import { useDeletePrescription, usePrescription, useReprocessPrescription } from
 import { PrescriptionReview } from "./prescription-review";
 import { PrescriptionStatusBadge } from "./status-badge";
 import { useT } from "@/hooks/use-t";
+import { RxThumb } from "@/components/shared/rx-thumb";
 
 export function PrescriptionDetail({ id, patientId }: { id: string; patientId?: string }) {
   const router = useRouter();
@@ -83,13 +84,19 @@ export function PrescriptionDetail({ id, patientId }: { id: string; patientId?: 
       <div className="grid gap-6 lg:grid-cols-[minmax(0,380px)_1fr]">
         <div className="space-y-4">
           <Card className="overflow-hidden py-0">
-            <a href={rx.imageUrl} target="_blank" rel="noreferrer" className="group relative block bg-muted">
-              {/* eslint-disable-next-line @next/next/no-img-element -- Cloudinary image, opens full size */}
-              <img src={rx.imageUrl} alt={t("Uploaded prescription", "আপলোড করা প্রেসক্রিপশন")} className="max-h-[520px] w-full object-contain" />
-              <span className="absolute right-2 bottom-2 flex items-center gap-1 rounded-md bg-background/90 px-2 py-1 text-xs opacity-0 transition-opacity group-hover:opacity-100">
-                <ExternalLink className="size-3" /> {t("Open full size", "বড় করে দেখুন")}
-              </span>
-            </a>
+            {rx.imageUrl ? (
+              <a href={rx.imageUrl} target="_blank" rel="noreferrer" className="group relative block bg-muted">
+                {/* eslint-disable-next-line @next/next/no-img-element -- Cloudinary image, opens full size */}
+                <img src={rx.imageUrl} alt={t("Uploaded prescription", "আপলোড করা প্রেসক্রিপশন")} className="max-h-[520px] w-full object-contain" />
+                <span className="absolute right-2 bottom-2 flex items-center gap-1 rounded-md bg-background/90 px-2 py-1 text-xs opacity-0 transition-opacity group-hover:opacity-100">
+                  <ExternalLink className="size-3" /> {t("Open full size", "বড় করে দেখুন")}
+                </span>
+              </a>
+            ) : (
+              <div className="h-48">
+                <RxThumb url={null} source={rx.source} />
+              </div>
+            )}
           </Card>
           <Card>
             <CardContent className="space-y-3 text-sm">

@@ -15,6 +15,7 @@ import { usePrescriptions } from "./api";
 import { PrescriptionStatusBadge } from "./status-badge";
 import { UploadPrescriptionDialog } from "./upload-dialog";
 import { useT } from "@/hooks/use-t";
+import { RxThumb } from "@/components/shared/rx-thumb";
 
 export function PrescriptionList({ patientId, openUpload = false }: { patientId?: string; openUpload?: boolean }) {
   const [page, setPage] = useState(1);
@@ -100,13 +101,7 @@ export function PrescriptionList({ patientId, openUpload = false }: { patientId?
               <Link key={p.id} href={`/dashboard/prescriptions/${p.id}${qs}`} className="group rounded-xl focus-visible:ring-3 focus-visible:ring-ring/50 focus-visible:outline-none">
                 <Card className="h-full overflow-hidden py-0 transition-shadow group-hover:shadow-md">
                   <div className="relative h-36 bg-muted">
-                    {/* eslint-disable-next-line @next/next/no-img-element -- Cloudinary-transformed thumbnail */}
-                    <img
-                      src={p.imageUrl.replace("/upload/", "/upload/c_fill,w_600,h_300,q_auto,f_auto/")}
-                      alt=""
-                      loading="lazy"
-                      className="size-full object-cover"
-                    />
+                    <RxThumb url={p.imageUrl} source={p.source} />
                     <div className="absolute top-2 right-2">
                       <PrescriptionStatusBadge status={p.status} />
                     </div>
